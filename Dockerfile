@@ -1,30 +1,15 @@
-FROM ubuntu:latest
+FROM ubuntu:jammy
 
-ENV TZ=Europe/London
+ENV TZ=Europe/Paris
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN apt-get update \
- && apt-get install -y sudo
- 
-RUN sudo apt-get -y install avahi-daemon
+RUN apt-get update && apt-get install -y git
 
-RUN adduser --disabled-password --gecos '' wirepod
-RUN adduser wirepod sudo
-RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
-
-USER wirepod
-
-RUN sudo apt-get update && sudo apt-get install -y git
-RUN sudo mkdir /wire-pod
-RUN sudo chown -R wirepod:wirepod /wire-pod
-
-RUN cd /wire-pod
-RUN git clone https://github.com/kercre123/wire-pod/ wire-pod
+RUN git clone https://github.com/kercre123/wire-pod --depth=1
 
 WORKDIR /wire-pod
 
-CMD sudo STT=vosk ./setup.sh
+RUN STT=vosk ./setup.sh \
+    && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /wire-pod/chipper
-
-CMD sudo ./start.sh
+ENTRYPOINT ["chipper/start.sh"]
