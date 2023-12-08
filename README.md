@@ -5,4 +5,4 @@
         -p 8084:8084 \
         --hostname=escapepod \
         --restart=always \
-        spkuja/wire-pod
+        smourph/wire-pod
